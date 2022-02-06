@@ -21,15 +21,12 @@ Element.prototype.closest = function (s) {
         return null;
 };
 }
- 
 
 function t806__init(recid) {
   t_onFuncLoad('tvote__init', function () {
           tvote__init(recid)
   });
   var testWrap = document.querySelector('#rec' + recid);
-  var testContainer = testWrap.querySelector('.t806');
-  var rightAnswersCount;
   var testAnswers = testWrap.querySelectorAll('.t806__answers');
   var testBlock = testWrap.querySelector('.t806__test');
   var testResultWrap = testWrap.querySelectorAll('.t806__result-wrap');
@@ -134,17 +131,6 @@ function t806__startClickBtn(test) {
   })
 }
 
-function t806__toggleButton() {
-        var ButtonsWrap = document.querySelector('t806__btn-wrapper');
-        var next = document.querySelector('t806__btn_next');
-        var check = document.querySelector('t806__btn_check');
-        check.addEventListener('click', function() {
-                check.classList.remove('t806__btn_show');
-                next.classList.add('t806__btn_show');
-        });
-        t806_scrollToTop();
-}
-
 function t806__changeRadio(test, rightansw) {
         var testBlock = document.querySelector('#rec' + test);
         var testInput = testBlock.querySelectorAll('.t806__input[type="radio"]');
@@ -166,7 +152,10 @@ function t806__changeRadio(test, rightansw) {
                                 } else {
                                         testAnswers.nextElementSibling.querySelector('.t806__btn_next').classList.add('t806__btn_show')
                                 }
-                                testItem.querySelector('.t806__input').setAttribute('disabled', !0);
+                                var restInputs = testItem.querySelectorAll('.t806__input');
+                                for (var i = 0; i < restInputs.length; i++) {
+                                        restInputs[i].setAttribute('disabled', !0);
+                                }
                                 if (+checkedRadio === +currentRightAnswer) {
                                         rightAnswersCount++;
                                         testBlock.querySelector('.t806__counter').setAttribute('data-count', rightAnswersCount)
@@ -177,15 +166,19 @@ function t806__changeRadio(test, rightansw) {
                                 testItem.querySelector('.t806__input:checked').parentNode.nextElementSibling.style.display = 'block';
                                 testItem.querySelector('.t806__input[value="' + currentRightAnswer + '"]').closest('.t806__answer').classList.add('t806__answer_correct');
                                 answerVote.classList.add('t806__answer-vote_show');
-                                testItem.querySelector('.t806__input:checked').closest('.t806__answer_correct').classList.add('t806__answer_withoutopacity');
-                                testItem.querySelector('.t806__input[type="radio"]').closest('.t806__answer_correct').classList.add('t806__answer_withoutopacity')
+                                if (testItem.querySelector('.t806__input:checked').closest('.t806__answer_correct')) {
+                                        testItem.querySelector('.t806__input:checked').closest('.t806__answer_correct').classList.add('t806__answer_withoutopacity');
+                                }
+                                if (testItem.querySelector('.t806__input[type="radio"]').closest('.t806__answer_correct')) {
+                                        testItem.querySelector('.t806__input[type="radio"]').closest('.t806__answer_correct').classList.add('t806__answer_withoutopacity');
+                                }
                         }
                 })
         }
         t806_scrollToTop() 
 }
     
-    function t806__changeTestInput(test) {
+function t806__changeTestInput(test) {
         var testBlock = document.querySelector('#rec' + test);
         var testInput = testBlock.querySelectorAll('.t806__input[type="checkbox"]');
         var lastQuiz = testBlock.querySelectorAll('.t806__question');
@@ -212,13 +205,19 @@ function t806__changeRadio(test, rightansw) {
 }
     
     function t806__checkClickBtn(test, rightansw) {
-        var rightChecked = !1;
         var testBlock = document.querySelector('#rec' + test);
         var testBtnCheck = testBlock.querySelectorAll('.t806__btn_check');
-        var testInput = testBlock.querySelectorAll('.t806__input');
+        var testBtnNext = testBlock.querySelectorAll('.t806__btn_next');
         var checkedAnswersTruth = [];
         for (var i = 0; i < testBtnCheck.length; i++) {
                 testBtnCheck[i].addEventListener('click', function (event) {
+                        for (var y = 0; y < testBtnNext.length; y++) {
+                                if (testBtnNext[y].classList.contains('t806__btn_show')) {
+                                        for (var i = 0; i < testBtnCheck.length; i++) {
+                                                testBtnCheck[i].classList.remove('t806__btn_show');
+                                        }
+                                }
+                        }
                         var rightAnswersCount = testBlock.querySelector('.t806__counter').getAttribute('data-count');
                         var testItem = event.target.closest('#rec' + test + ' .t806__question');
                         var testItemChecked = testItem.querySelectorAll('.t806__input:checked');
@@ -230,7 +229,10 @@ function t806__changeRadio(test, rightansw) {
                         for (var i = 0; i < checkboxAnswers.length; i++) {
                                 checkboxAnswersArr.push(checkboxAnswers[i])
                         }
-                        testItem.querySelector('.t806__input').setAttribute('disabled', !0);
+                        var testInputs = testItem.querySelectorAll('.t806__input');
+                        for (var i = 0; i < testInputs.length; i++) {
+                                testInputs[i].setAttribute('disabled', !0);
+                        }
                         answerVote.classList.add('t806__answer-vote_show');
                         for (var i = 0; i < checkedAnswers.length; i++) {
                                 var checkedCheckboxSort = checkedAnswers.sort();
@@ -348,7 +350,7 @@ function t806__restartClickBtn(test, rightansw) {
                 testBlock.querySelector('.t806__btn_check').classList.remove('t806__btn_show');
                 testBlock.querySelector('.t806__details').style.display = 'none';
                 testBlock.querySelector('.t806__answers').classList.remove('t806__answers_answered');
-                testBlock.querySelector('.t806__answers').getAttribute('data-test-checked', '');
+                testBlock.querySelector('.t806__answers').setAttribute('data-test-checked', '');
                 testBlock.querySelector('.t806__answer').classList.remove('t806__answer_correct');
                 testBlock.querySelector('.t806__answer').classList.remove('t806__answer_wrong');
                 testBlock.querySelector('.t806__input').closest('.t806__answer').classList.remove('t806__answer_withoutopacity');
@@ -387,7 +389,7 @@ function t806__showResult(test) {
   var resultData = [];
   for (var i = 0; i < fullResult.length; i++) {
     if (fullResult[i].style.display === 'block') {
-        resultData[0] = fullResult[i].querySelector('.t806__result-variant').textContent
+        resultData[0] = fullResult[i].querySelector('.t806__result-variant').textContent;
         resultData[1] = fullResult[i].querySelector('.t806__result-count').textContent;
         resultData[2] = '';
         var img = fullResult[i].querySelector('.t806__result-wrap img');
@@ -558,7 +560,6 @@ function t806_shareTwitter(recid, ptitle, purl) {
   var testContainer = testWrap.querySelector('.t806');
   var text = dataForShare[0];
   var count = dataForShare[1];
-  var img = dataForShare[2];
   var resultCount = count.substring(0, count.indexOf('/'));
   var allCount = count.substring(count.indexOf('/') + 1)
   var result;
