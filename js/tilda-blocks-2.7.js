@@ -20,7 +20,7 @@ if (!Element.prototype.matches) {
             }
             return null;
         };
-    }
+}
 
 function t806__init(recid) {
         t_onFuncLoad("tvote__init", function () {
@@ -84,25 +84,7 @@ function t806__init(recid) {
     }
     
     function t806_scrollToTop() {
-        var duration = 0;
-        // cancel if already on top
-        if (document.scrollingElement.scrollTop === 0) return;
-    
-        const totalScrollDistance = document.scrollingElement.scrollTop;
-        let scrollY = totalScrollDistance,
-            oldTimestamp = null;
-    
-        function step(newTimestamp) {
-            if (oldTimestamp !== null) {
-                // if duration is 0 scrollY will be -Infinity
-                scrollY -= (totalScrollDistance * (newTimestamp - oldTimestamp)) / duration;
-                if (scrollY <= 0) return (document.scrollingElement.scrollTop = 0);
-                document.scrollingElement.scrollTop = scrollY;
-            }
-            oldTimestamp = newTimestamp;
-            window.requestAnimationFrame(step);
-        }
-        window.requestAnimationFrame(step);
+        document.documentElement.scrollTop = 0;
     }
     
     function t806__clearFormOnBackClick(testWrap) {
@@ -315,7 +297,7 @@ function t806__init(recid) {
                         .classList.add("t806__btn_show");
                 }
                 testAnswers.classList.add("t806__answers_answered");
-                if (typeof document.querySelector(".t-records").getAttribute("data-tilda-mode") == "undefined") {
+                if (typeof document.querySelector(".t-records").getAttribute("data-tilda-mode") == "object") {
                     if (
                         window.lazy === "y" ||
                         document.querySelector("#allrecords").getAttribute("data-tilda-lazy") === "yes"
@@ -446,14 +428,14 @@ function t806__init(recid) {
                 var img = fullResult[i].querySelector(".t806__result-wrap img");
                 if (testContainer.classList.contains("t806__test-reload")) {
                     if (img.length != 0) {
-                        if (typeof window.lazy !== "undefined") {
+                        if (typeof window.lazy !== "object") {
                             resultData[2] = img.getAttribute("data-original") || img.getAttribute("src");
                         } else {
                             resultData[2] = img.getAttribute("src");
                         }
                     }
                     if (img.length == 0 && startImg.length != 0) {
-                        if (typeof window.lazy !== "undefined") {
+                        if (typeof window.lazy !== "object") {
                             resultData[2] = startImg.getAttribute("data-original") || img.getAttribute("src");
                         } else {
                             resultData[2] = startImg.getAttribute("src");
